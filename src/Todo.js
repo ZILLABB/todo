@@ -1,44 +1,39 @@
-import moment from "moment/moment";
 import React, { useState } from "react";
-import { GrAddCircle } from "react-icons/gr";
-import check from "./images/Group 158.svg";
-import thumbnail from "./images/Group 159.svg";
-import checkList from "./images/Checklist-rafiki 1.svg";
-import Calendar from "react-calendar";
+import Modal from "./Modal";
+import TodoList from "./TodoList";
 
 const Todo = () => {
   const [todos, setTodos] = useState([]);
-  const [newTask, setNewTask] = useState({});
-  const [input, setInput] = useState(false);
-  const [date, setDate] = useState(new Date());
-
-  // let newTime = {};
-  // let formattedTime = moment("".time).format("MMM DD YYYY  HH:mm");
-  // console.log();
+  const [newTask, setNewTask] = useState({
+    name: "",
+    date: "",
+    startTime: "",
+    endTime: "",
+  });
+  const [count, setCount] = useState(0);
+  const [taskCount, setTaskCount] = useState(0);
+  const [updateTask, setUpdateTask] = useState();
+  const [modal, setModal] = useState(false);
 
   const handleChange = (event) => {
-    setNewTask(event.target.value);
+    setNewTask({ ...newTask, [event.target.name]: event.target.value });
   };
 
   const addTask = (e) => {
     e.preventDefault();
-    if (!newTask) {
-      alert("Add a Task");
-    } else {
-      const todo = {
-        id: todos.length === 0 ? 1 : todos[todos.length - 1].id + 1,
-        todoName: newTask,
-        completed: false,
-      };
-      setTodos([...todos, todo]);
-    }
+    const todo = {
+      id: todos.length === 0 ? 1 : todos[todos.length - 1].id + 1,
+      todoName: newTask,
+      completed: false,
+    };
+    setTodos([...todos, todo]);
+    // }
   };
 
   const completedTask = (todoName) => {
     setTodos(
       todos.map((todo) => {
         if (todo === todoName) {
-          console.log(todo);
           return { ...todo, completed: true };
         } else {
           return todo;
@@ -47,96 +42,104 @@ const Todo = () => {
     );
   };
 
+  const CancelUpdate = () => {
+    setUpdateTask("");
+  };
+
+  const updateClick = (todo) => {
+    setUpdateTask(todo.id, todo.completed, todo.todoName);
+  };
+
   const Delete = (todoName) => {
     setTodos(todos.filter((todo) => todo !== todoName));
   };
 
   return (
-    <div className="bg-gradient-to-r from-purple-500 to-black rounded-t-2xl">
-      <div className="text-center  justify-center m-auto  ">
-        <div className="flex mb-16  justify-between p-3">
-          <img src={check} alt="" />
-          <h1 className="text-white">Index</h1>
-          <img src={thumbnail} alt="" />
-        </div>
-
-        <div className="">
-          <img src={checkList} className="mx-auto" alt="" />
-        </div>
-        {/* <h1 className="text-[40px] lg:w-[200px] font-4xl text-white border-4 lg:text-center justify-center  shadow-xl rounded-2xl p-3 ">
-          {formattedTime}
-        </h1> */}
-        <div className="w-[375px] text-white bg-[#363636] shadow-xl ">
-          {input && (
-            <form action="submit" className="">
-              <h1>Add Task</h1>
-              <input
-                type="text"
-                placeholder=" title"
-                className="h-[45px] lg:rounded-l-xl rounded-md border-1 opacity-4 pl-3 border-white mt-20 bg-slate-800 lg:w-[300px] w-[325px]  "
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="text"
-                placeholder=" description"
-                className="h-[45px] lg:rounded-l-xl rounded-md border-1 opacity-4 pl-3 border-white mt-20 bg-slate-800 lg:w-[300px] w-[325px]  "
-                onChange={handleChange}
-                required
-              />
-              <button
-                type="submit"
-                onClick={addTask}
-                className="bg-green-400 h-10 text-xl w-[150px] text-white lg:rounded-r-xl rounded-xl mt-2"
-              >
-                Add New Task
-              </button>
-            </form>
-          )}
-        </div>
-
-        <div>
-          {todos &&
-            todos.map((todo, index) => {
-              return (
-                <div className="shadow-lg">
-                  <h1
-                    className={`text-[50px]  shadow-lg rounded-xl text-white font-normal bg-slate-400 lg:w-[400px]  flex justify-center m-auto mt-[20px] ${
-                      todo.completed === true ? "bg-green-300" : "bg-green-900"
-                    }  `}
-                    key={index}
-                  >
-                    {todo.todoName}
-                  </h1>
-                  <button
-                    onClick={() => completedTask(todo)}
-                    className={`bg-emerald-800  text-white text-4xl mt-5 w-[200px] rounded-lg h-15 mb-5 
-                }`}
-                  >
-                    Completed
-                  </button>
-                  <button
-                    onClick={() => Delete(todo)}
-                    className="bg-emerald-800 text-white text-4xl mt-5 w-[150px] ml-5 rounded-lg h-15 mb-5"
-                  >
-                    Delete
-                  </button>
-                </div>
-              );
-            })}
-          <div className="text-white">
-            <div>
-              <Calendar onChange={setDate} value={date} />
-            </div>
-            <div>{date.toDateString()}</div>
+    <div className=" lg:flex absolute overflow-x  ">
+      <div className=" text-center w-[634px]  ">
+        <form onSubmit={addTask} className="">
+          <h1 className="text-red-500 font-bold text-[26px] text-center mb-12 font-poppins">
+            CREATE A TASK
+          </h1>
+          <input
+            type="text"
+            placeholder=" Task Name"
+            name="name"
+            className="h-[65px] rounded-[10px] border-solid border-2 border-slate-500 mb-[41px]  opacity-4 pl-3 mt-2 w-[555px] "
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="date"
+            placeholder=" Date"
+            name="date"
+            className="h-[65px] rounded-[10px] border-solid border-2 border-slate-500 mb-[44px]  opacity-4 pl-3 mt-2 w-[555px]   "
+            onChange={handleChange}
+            required
+          />
+          <div className="flex gap-[59px] justify-center mb-20">
+            <input
+              type="time"
+              placeholder=" Start Time"
+              name="startTime"
+              className="h-[65px] rounded-[10px] border-solid  border-slate-500 border-2  opacity-4 pl-3 mt-2  w-[248px] shadow-xl  "
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="time"
+              placeholder=" End Time"
+              name="endTime"
+              className="h-[65px] rounded-[10px] border-solid  border-slate-500 border-2  opacity-4 pl-3 mt-2  w-[248px] shadow-xl  "
+              onChange={handleChange}
+              required
+            />
           </div>
+          <button
+            type="submit"
+            className="bg-[#C54B4B] h-[68px] text-xl w-[394px] text-white  rounded-[14px] mt-2 font-poppins "
+          >
+            CREATE TASK
+          </button>
+        </form>
+      </div>
+      <div className="  mt-11">
+        <h1 className="text-red-500 font-bold text-[26px] text-center  font-poppins">
+          My Task
+        </h1>
+        <hr className="border-2 border-slate-400 mb-[26.98px]" />
+        <div
+          className={` text-black mb-[18px] w-[319px] h-[44px] rounded-md bg-[#F5F5F5] flex `}
+        >
+          <h1 className="font-poppins font-bold text-sm pl-[9px] pt-[14px]  ">
+            Total task : {todos.length}
+          </h1>
+          <h1 className="font-poppins font-bold text-sm pl-[9px] pt-[14px]  ">
+            completed Task : {count}
+          </h1>
         </div>
-        <div className=" w-10 rounded-full m-auto bg-gray-50">
-          <GrAddCircle
-            className="w-10  h-10 m-auto mt-4 "
-            onClick={() => setInput(!input)}
+        <div className="">
+          <TodoList
+            todos={todos}
+            completedTask={completedTask}
+            Delete={Delete}
+            setUpdateTask={setUpdateTask}
+            count={count}
+            setCount={setCount}
+            addTask={addTask}
+            taskCount={taskCount}
+            setTaskCount={setTaskCount}
+            setModal={setModal}
           />
         </div>
+        {modal && (
+          <Modal
+            todos={todos}
+            addTask={addTask}
+            handleChange={handleChange}
+            setModal={setModal}
+          />
+        )}
       </div>
     </div>
   );
