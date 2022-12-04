@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import Modal from "./Modal";
 import TodoList from "./TodoList";
 
@@ -12,21 +12,33 @@ const Todo = () => {
   });
   const [count, setCount] = useState(0);
   const [taskCount, setTaskCount] = useState(0);
-  const [updateTask, setUpdateTask] = useState();
+  const [editTodo, setEditTodo] = useState(null);
   const [modal, setModal] = useState(false);
 
+  const updateTodo = (todoName, id, completed) => {
+    const newTodo = todos.map((todo) =>
+      todo.id === id ? { todoName, id, completed } : todo
+    );
+    setTodos(newTodo);
+    setEditTodo("");
+  };
   const handleChange = (event) => {
     setNewTask({ ...newTask, [event.target.name]: event.target.value });
   };
 
   const addTask = (e) => {
     e.preventDefault();
-    const todo = {
-      id: todos.length === 0 ? 1 : todos[todos.length - 1].id + 1,
-      todoName: newTask,
-      completed: false,
-    };
-    setTodos([...todos, todo]);
+    if (!editTodo) {
+      const todo = {
+        id: todos.length === 0 ? 1 : todos[todos.length - 1].id + 1,
+        todoName: newTask,
+        completed: false,
+      };
+      setTodos([...todos, todo]);
+    } else {
+      updateTodo(newTask, editTodo.id, editTodo.completed);
+    }
+
     // }
   };
 
@@ -42,13 +54,25 @@ const Todo = () => {
     );
   };
 
-  const CancelUpdate = () => {
-    setUpdateTask("");
+  const handleEdit = (id) => {
+    const findTodo = todos.find((todo) => todo.id === id);
+    setEditTodo(findTodo);
+    setModal(true);
   };
+  console.log(editTodo);
 
-  const updateClick = (todo) => {
-    setUpdateTask(todo.id, todo.completed, todo.todoName);
-  };
+
+  // useEffect(() => {
+  //   if (editTodo) {
+  //     setNewTask(editTodo.todoName);
+  //   } else {
+  //     setNewTask("");
+  //   }
+  // }, [setNewTask, editTodo]);
+
+  // const updateClick = (todo) => {
+  //   setUpdateTask(todo.id, todo.completed, todo.todoName);
+  // };
 
   const Delete = (todoName) => {
     setTodos(todos.filter((todo) => todo !== todoName));
@@ -123,13 +147,14 @@ const Todo = () => {
             todos={todos}
             completedTask={completedTask}
             Delete={Delete}
-            setUpdateTask={setUpdateTask}
+            setEditTodo={setEditTodo}
             count={count}
             setCount={setCount}
             addTask={addTask}
             taskCount={taskCount}
             setTaskCount={setTaskCount}
             setModal={setModal}
+            handleEdit={handleEdit}
           />
         </div>
         {modal && (
@@ -138,6 +163,12 @@ const Todo = () => {
             addTask={addTask}
             handleChange={handleChange}
             setModal={setModal}
+            setEditTodo={setEditTodo}
+            handleEdit={handleEdit}
+            editTodo={editTodo}
+            setNewTask={setNewTask}
+            newTask={newTask}
+            
           />
         )}
       </div>

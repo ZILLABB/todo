@@ -8,6 +8,7 @@ const TodoList = ({
   count,
   setCount,
   setModal,
+  handleEdit
 }) => {
   return (
     <div className="absolute">
@@ -38,7 +39,7 @@ const TodoList = ({
                             className={`mt-5 text-[#C54B4B] border-[1px] border-red-400 w-[25px] h-[24px] rounded-[50%] `}
                             src={editIcon}
                             alt="Edit"
-                            onClick={() => setModal(true)}
+                            onClick={()=> handleEdit(todo.id)}
                           />
                         )}
                         <div class="hidden group-hover:block font-normal text-sm font-poppins mt-10 ml-3">

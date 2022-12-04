@@ -1,6 +1,19 @@
-import React from "react";
+import { React, useRef, useState } from "react";
 
-const Modal = ({ addTask, handleChange, setModal }) => {
+const Modal = ({ addTask, setModal, todos, handleEdit, editTodo }) => {
+  const [newTask, setNewTask] = useState({
+    name: "",
+    date: "",
+    startTime: "",
+    endTime: "",
+  });
+
+  const inputRef = useRef();
+
+  const handleChange = (event) => {
+    setNewTask({ ...newTask, [event.target.name]: event.target.value });
+  };
+
   return (
     <div className="top-0 left-0 right-0 z-2 w-[100vw] h-[100vh] bg-[#00000066]  absolute   ">
       <div className="flex justify-center">
@@ -12,13 +25,15 @@ const Modal = ({ addTask, handleChange, setModal }) => {
             >
               X
             </button>
-            <form onSubmit={addTask} className="">
+            <form onSubmit={() => handleEdit(todos)} className="">
               <h1 className="text-red-500 font-bold text-[26px] text-center  font-poppins">
                 EDIT TASK
               </h1>
               <input
                 type="text"
                 placeholder=" Task Name"
+                value={editTodo.todoName.name}
+                ref={inputRef}
                 name="name"
                 className="h-[65px] rounded-[10px] border-solid border-2 border-slate-500 mb-[21px]  opacity-4 pl-3 mt-1 w-[555px] "
                 onChange={handleChange}
@@ -28,6 +43,7 @@ const Modal = ({ addTask, handleChange, setModal }) => {
                 type="date"
                 placeholder=" Date"
                 name="date"
+                value={editTodo.todoName.date}
                 className="h-[65px] rounded-[10px] border-solid border-2 border-slate-500 mb-[24px]  opacity-4 pl-3 mt-2 w-[555px]   "
                 onChange={handleChange}
                 required
@@ -37,6 +53,7 @@ const Modal = ({ addTask, handleChange, setModal }) => {
                   type="time"
                   placeholder=" Start Time"
                   name="startTime"
+                  value={editTodo.todoName.startTime}
                   className="h-[65px] rounded-[10px] border-solid  border-slate-500 border-2  opacity-4 pl-3 mt-2  w-[248px] shadow-xl  "
                   onChange={handleChange}
                   required
@@ -45,6 +62,7 @@ const Modal = ({ addTask, handleChange, setModal }) => {
                   type="time"
                   placeholder=" End Time"
                   name="endTime"
+                  value={editTodo.todoName.endTime}
                   className="h-[65px] rounded-[10px] border-solid  border-slate-500 border-2  opacity-4 pl-3 mt-2  w-[248px] shadow-xl  "
                   onChange={handleChange}
                   required
